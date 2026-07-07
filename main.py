@@ -1,3 +1,14 @@
+import subprocess
+
+# result = subprocess.run(["python", "test.py"], capture_output=True, text=True) # run the test.py and capture the results
+# if result.returncode == 0: # no errors return the code
+#     print(result.stdout)
+# else:                   # if there is an error print the error
+#     print(result.stderr) 
+
+
+
+
 #File read tool for the CodingAgent
 class FileTool:
 
@@ -11,11 +22,21 @@ class FileTool:
             file.write(content)
         return f"Wrote: {filename}"
     
+
+
 # Code running tool    
 class CodeTool:
-    def run_code(self, code):
-        return f"Running: {code}"
+    def run_code(self, filename):
+        result = subprocess.run(["python", filename], capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout
+        else:
+            return result.stderr
+       
     
+
+
+
 #Agent class    
 class CodingAgent:
     def __init__(self, task): #store task parameter as attribute upon initiation
@@ -70,6 +91,8 @@ class CodingAgent:
     
 
 agent = CodingAgent("Create a Python calculator")
+run_result = agent.run_code("test.py")
+print(run_result)
 
 #current_task = agent.show_task()
 #final_result = agent.run()
