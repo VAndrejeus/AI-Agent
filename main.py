@@ -6,9 +6,6 @@ import subprocess
 # else:                   # if there is an error print the error
 #     print(result.stderr) 
 
-
-
-
 #File read tool for the CodingAgent
 class FileTool:
 
@@ -44,6 +41,10 @@ class CodingAgent:
         self.results = [] # list to store results
         self.file_tool = FileTool() #give access to read/write from FileTool class
         self.code_tool = CodeTool() # give access to run code from CodeTool
+    def create_and_run(self, filename, content):
+        self.write_file(filename, content)
+        result = self.run_code(filename)
+        return result
 
     def read_file(self, filename): #read file from FileTool
         result = self.file_tool.read_file(filename)
@@ -57,18 +58,30 @@ class CodingAgent:
         result = self.code_tool.run_code(code)
         return result
 
-    def plan(self):
+    def plan(self): # plan with actual steps
         steps = [
-            self.task, # initial task from agent creation
-            "Write the code",
-            "Test the code"
+                    {
+            "tool": "write_file",
+            "filename": "test.py",
+            "content": "print('Hello from autonomous agent')"
+        },
+                    {
+            "tool": "run_code",
+            "filename": "test.py"
+        }
+
         ]
         self.steps = steps
 
     def execute(self): 
-        for step in self.steps: #loops through every step 
-            executed_step = f"Completed: {step}" #stores it inside completed variable with a completion string
-            self.results.append(executed_step) # append executed step to results
+        for step in self.steps: #loops through every step and chooses tool based on tool key
+            if step["tool"] == "write_file":
+                result = self.write_file(step["filename"], step["content"])
+            elif step["tool"] == "run_code":
+                result = self.run_code(step["filename"])
+            self.results.append(result)
+            # executed_step = f"Completed: {step}" #stores it inside completed variable with a completion string
+            # self.results.append(executed_step) # append executed step to results
 
     def show_task(self): # agent returns original task
         orig_task = self.task
@@ -91,11 +104,15 @@ class CodingAgent:
     
 
 agent = CodingAgent("Create a Python calculator")
-run_result = agent.run_code("test.py")
-print(run_result)
+
+# result = agent.create_and_run("test.py", "print('Created and run by agent')")
+# print(result)
+# run_result = agent.run_code("test.py")
+# print(run_result)
 
 #current_task = agent.show_task()
-#final_result = agent.run()
+final_result = agent.run()
+print(final_result)
 #print(current_task, "\n",final_result)
 #code_tool = CodeTool()
 #result = code_tool.run_code("print('Hello')")
@@ -103,3 +120,4 @@ print(run_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
+
