@@ -63,7 +63,7 @@ class CodingAgent:
                     {
             "tool": "write_file",
             "filename": "test.py",
-            "content": "print('Hello from autonomous agent')"
+            "content": f'print("{self.task}")' # now agent writes other python code int othe test file
         },
                     {
             "tool": "run_code",
@@ -120,4 +120,5 @@ print(final_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
+
 
