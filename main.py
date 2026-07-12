@@ -59,18 +59,30 @@ class CodingAgent:
         return result
 
     def plan(self): # plan with actual steps
-        steps = [
-                    {
-            "tool": "write_file",
-            "filename": "test.py",
-            "content": f'print("{self.task}")' # now agent writes other python code int othe test file
-        },
-                    {
-            "tool": "run_code",
-            "filename": "test.py"
-        }
-
-        ]
+        if self.task[:4] == "Read": # if tsk starts with "Read"
+            steps = [
+                {
+                    "tool": "read_file",
+                    "filename": self.task.split(" ")[1] # split the "read test.py" for example in a list and read secnd item
+                }
+            ]
+        elif self.task[:3] == "Run":
+            steps = [
+                {
+                    "tool": "run_code",
+                    "filename": self.task.split(" ")[1] # split the "run test.py" in a list and read the second item
+                }
+            ]
+        elif self.task[:5] == "Write":
+            steps = [
+                {
+                    "tool": "write_file",
+                    "filename": self.task.split(" ")[1], # split the "write hello.py" in a list and read second item
+                    "content": 'print("Hello World")'
+                }
+            ]
+        else:
+            steps = []
         self.steps = steps
 
     def execute(self): 
@@ -103,7 +115,7 @@ class CodingAgent:
         
     
 
-agent = CodingAgent("Create a Python calculator")
+agent = CodingAgent("Write hello.py")
 
 # result = agent.create_and_run("test.py", "print('Created and run by agent')")
 # print(result)
@@ -120,5 +132,4 @@ print(final_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
-
 
