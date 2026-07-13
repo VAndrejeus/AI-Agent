@@ -41,6 +41,11 @@ class CodingAgent:
         self.results = [] # list to store results
         self.file_tool = FileTool() #give access to read/write from FileTool class
         self.code_tool = CodeTool() # give access to run code from CodeTool
+        self.tools = {
+            "read_file": self.read_file,
+            "write_file": self.write_file,      #tools registry
+            "run_code": self.run_code
+        }
     def create_and_run(self, filename, content):
         self.write_file(filename, content)
         result = self.run_code(filename)
@@ -63,22 +68,28 @@ class CodingAgent:
             steps = [
                 {
                     "tool": "read_file",
-                    "filename": self.task.split(" ")[1] # split the "read test.py" for example in a list and read secnd item
+                    "args": {
+                        "filename": self.task.split(" ")[1] # split the "read test.py" for example in a list and read secnd item
+                    }
                 }
             ]
         elif self.task[:3] == "Run":
             steps = [
                 {
                     "tool": "run_code",
-                    "filename": self.task.split(" ")[1] # split the "run test.py" in a list and read the second item
+                    "args": {
+                        "filename": self.task.split(" ")[1] # split the "run test.py" in a list and read the second item
+                    }
                 }
             ]
         elif self.task[:5] == "Write":
             steps = [
                 {
                     "tool": "write_file",
-                    "filename": self.task.split(" ")[1], # split the "write hello.py" in a list and read second item
-                    "content": 'print("Hello World")'
+                    "args": {
+                        "filename": self.task.split(" ")[1], # split the "write hello.py" in a list and read second item
+                        "content": 'print("Hello World")'
+                    }  
                 }
             ]
         else:
@@ -87,11 +98,13 @@ class CodingAgent:
 
     def execute(self): 
         for step in self.steps: #loops through every step and chooses tool based on tool key
-            if step["tool"] == "write_file":
-                result = self.write_file(step["filename"], step["content"])
-            elif step["tool"] == "run_code":
-                result = self.run_code(step["filename"])
+            tool = self.tools[step["tool"]]
+            result = tool(**step["args"])
             self.results.append(result)
+            # if step["tool"] == "write_file":
+            #     result = self.write_file(step["filename"], step["content"])
+            # elif step["tool"] == "run_code":
+            #     result = self.run_code(step["filename"])
             # executed_step = f"Completed: {step}" #stores it inside completed variable with a completion string
             # self.results.append(executed_step) # append executed step to results
 
@@ -132,4 +145,3 @@ print(final_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
-
