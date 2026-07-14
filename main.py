@@ -98,7 +98,10 @@ class CodingAgent:
 
     def execute(self): 
         for step in self.steps: #loops through every step and chooses tool based on tool key
-            tool = self.tools[step["tool"]]
+            tool = self.tools.get(step["tool"])
+            if tool is None:
+                self.results.append(f"Unknown tool: {step['tool']}")
+                continue
             result = tool(**step["args"])
             self.results.append(result)
             # if step["tool"] == "write_file":
