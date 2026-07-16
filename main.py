@@ -88,7 +88,7 @@ class CodingAgent:
                     "tool": "write_file",
                     "args": {
                         "filename": self.task.split(" ")[1], # split the "write hello.py" in a list and read second item
-                        "content": 'print("Hello World")'
+                        #"content": 'print("Hello World")'
                     }  
                 }
             ]
@@ -99,9 +99,11 @@ class CodingAgent:
     def execute(self): 
         for step in self.steps: #loops through every step and chooses tool based on tool key
             tool = self.tools.get(step["tool"])
+
             if tool is None:
                 self.results.append(f"Unknown tool: {step['tool']}")
                 continue
+
             result = tool(**step["args"])
             self.results.append(result)
             # if step["tool"] == "write_file":
