@@ -64,31 +64,36 @@ class CodingAgent:
         return result
 
     def plan(self): # plan with actual steps
-        if self.task[:4] == "Read": # if tsk starts with "Read"
+        parts = self.task.split(" ") # split task in a list
+        if len(parts) < 2:
+            self.results.append("Invalid task: missing filename")
+            self.steps = [] # if less than 2 items, store empty list followed by return
+            return 
+        if self.task.startswith("Read "): # if tsk starts with "Read"
             steps = [
                 {
                     "tool": "read_file",
                     "args": {
-                        "filename": self.task.split(" ")[1] # split the "read test.py" for example in a list and read secnd item
+                        "filename": parts[1] # read second item
                     }
                 }
             ]
-        elif self.task[:3] == "Run":
+        elif self.task.startswith("Run "):
             steps = [
                 {
                     "tool": "run_code",
                     "args": {
-                        "filename": self.task.split(" ")[1] # split the "run test.py" in a list and read the second item
+                        "filename": parts[1] # read second item
                     }
                 }
             ]
-        elif self.task[:5] == "Write":
+        elif self.task.startswith("Write "):
             steps = [
                 {
                     "tool": "write_file",
                     "args": {
-                        "filename": self.task.split(" ")[1], # split the "write hello.py" in a list and read second item
-                        #"content": 'print("Hello World")'
+                        "filename": parts[1], # read second item
+                        "content": 'print("Hello World")'
                     }  
                 }
             ]
@@ -101,10 +106,16 @@ class CodingAgent:
             tool = self.tools.get(step["tool"])
 
             if tool is None:
-                self.results.append(f"Unknown tool: {step['tool']}")
+                self.results.append(f"Unknown tool: {step['tool']}") # Unknown tools fault tolerance
                 continue
-
-            result = tool(**step["args"])
+            try:
+                result = tool(**step["args"])
+            except TypeError:
+                self.results.append(f"Invalid arguments for tool: {step['tool']}") #Bad arguments( no arguments, etc) fault tolerance
+                continue
+            except Exception as error:
+                self.results.append(f"Tool failed: {step['tool']} - {error}") # tool failed fault tolerance
+                continue
             self.results.append(result)
             # if step["tool"] == "write_file":
             #     result = self.write_file(step["filename"], step["content"])
@@ -150,3 +161,5 @@ print(final_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
+
+
