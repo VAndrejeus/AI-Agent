@@ -64,12 +64,13 @@ class CodingAgent:
         return result
 
     def plan(self): # plan with actual steps
-        parts = self.task.split(" ") # split task in a list
+        parts = self.task.split() # split task in a list
+        command = parts[0].lower() # store the first word of the parts list as command
         if len(parts) < 2:
             self.results.append("Invalid task: missing filename")
             self.steps = [] # if less than 2 items, store empty list followed by return
             return 
-        if self.task.startswith("Read "): # if tsk starts with "Read"
+        if command == "read": # if command is read
             steps = [
                 {
                     "tool": "read_file",
@@ -78,7 +79,7 @@ class CodingAgent:
                     }
                 }
             ]
-        elif self.task.startswith("Run "):
+        elif command == "run":
             steps = [
                 {
                     "tool": "run_code",
@@ -87,7 +88,7 @@ class CodingAgent:
                     }
                 }
             ]
-        elif self.task.startswith("Write "):
+        elif command== "write":
             steps = [
                 {
                     "tool": "write_file",
