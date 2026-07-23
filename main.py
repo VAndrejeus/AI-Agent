@@ -99,7 +99,9 @@ class CodingAgent:
                 }
             ]
         else:
-            steps = []
+            self.results.append(f"Unsupported command: {command}")
+            self.steps = []
+            return
         self.steps = steps
 
     def execute(self): 
@@ -145,7 +147,7 @@ class CodingAgent:
         
     
 
-agent = CodingAgent("Write hello.py")
+agent = CodingAgent("Delete hello.py")
 
 # result = agent.create_and_run("test.py", "print('Created and run by agent')")
 # print(result)
@@ -162,5 +164,6 @@ print(final_result)
 #file_tool = FileTool()
 #result = file_tool.write_file("test.py", "print('Hello')")
 #print(result)
+
 
 
