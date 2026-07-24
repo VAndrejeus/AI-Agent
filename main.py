@@ -65,17 +65,18 @@ class CodingAgent:
 
     def plan(self): # plan with actual steps
         parts = self.task.split() # split task in a list
-        command = parts[0].lower() # store the first word of the parts list as command
         if len(parts) < 2:
             self.results.append("Invalid task: missing filename")
             self.steps = [] # if less than 2 items, store empty list followed by return
             return 
+        command = parts[0].lower() # store the first word of the parts list as command
+        filename = " ".join(parts[1:])
         if command == "read": # if command is read
             steps = [
                 {
                     "tool": "read_file",
                     "args": {
-                        "filename": parts[1] # read second item
+                        "filename": filename # read second item
                     }
                 }
             ]
@@ -84,7 +85,7 @@ class CodingAgent:
                 {
                     "tool": "run_code",
                     "args": {
-                        "filename": parts[1] # read second item
+                        "filename": filename # read second item
                     }
                 }
             ]
@@ -93,7 +94,7 @@ class CodingAgent:
                 {
                     "tool": "write_file",
                     "args": {
-                        "filename": parts[1], # read second item
+                        "filename": filename, # read second item
                         "content": 'print("Hello World")'
                     }  
                 }
