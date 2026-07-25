@@ -76,7 +76,7 @@ class CodingAgent:
                 {
                     "tool": "read_file",
                     "args": {
-                        "filename": filename # read second item
+                        "filename": filename # use parsed filename
                     }
                 }
             ]
@@ -85,27 +85,39 @@ class CodingAgent:
                 {
                     "tool": "run_code",
                     "args": {
-                        "filename": filename # read second item
+                        "filename": filename # use parsed filename
                     }
                 }
             ]
         elif command== "write":
+            if len(parts) < 3: # make sure the contens portion is in the parts
+                self.results.append("Invalid write command: missing content")
+                self.steps = []
+                return
+            filename = parts[1]
+            content = " ".join(parts[2:])
             steps = [
                 {
                     "tool": "write_file",
                     "args": {
-                        "filename": filename, # read second item
-                        "content": 'print("Hello World")'
+                        "filename": filename, # use parsed filename
+                        "content": content
                     }  
                 }
             ]
         elif command == "writerun": # two command command write and run
+            if len(parts) < 3:
+                self.results.append("Invalid writerun command: missing content")
+                self.steps = []
+                return
+            filename = parts[1]
+            content = " ".join(parts[2:])
             steps = [
                 {
                     "tool": "write_file",
                     "args": {
                         "filename": filename,
-                        "content": 'print("Hello World")'
+                        "content": content
                     }
                 },
                 {
@@ -164,7 +176,7 @@ class CodingAgent:
         
     
 
-agent = CodingAgent("writerun hello.py")
+agent = CodingAgent("writerun hello.py print('jhkjhkj')")
 
 # result = agent.create_and_run("test.py", "print('Created and run by agent')")
 # print(result)
