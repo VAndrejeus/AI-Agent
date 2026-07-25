@@ -59,8 +59,8 @@ class CodingAgent:
         result = self.file_tool.write_file(filename, content)
         return result
     
-    def run_code(self, code): #Run code from Code
-        result = self.code_tool.run_code(code)
+    def run_code(self, filename): #Run code from Code
+        result = self.code_tool.run_code(filename)
         return result
 
     def plan(self): # plan with actual steps
@@ -99,6 +99,22 @@ class CodingAgent:
                     }  
                 }
             ]
+        elif command == "writerun": # two command command write and run
+            steps = [
+                {
+                    "tool": "write_file",
+                    "args": {
+                        "filename": filename,
+                        "content": 'print("Hello World")'
+                    }
+                },
+                {
+                    "tool": "run_code",
+                    "args": {
+                        "filename": filename
+                    }
+                }
+            ]
         else:
             self.results.append(f"Unsupported command: {command}")
             self.steps = []
@@ -114,8 +130,8 @@ class CodingAgent:
                 continue
             try:
                 result = tool(**step["args"])
-            except TypeError:
-                self.results.append(f"Invalid arguments for tool: {step['tool']}") #Bad arguments( no arguments, etc) fault tolerance
+            except TypeError as error:
+                self.results.append(f"Invalid arguments for tool: {step['tool']} - {error}") #Bad arguments( no arguments, etc) fault tolerance
                 continue
             except Exception as error:
                 self.results.append(f"Tool failed: {step['tool']} - {error}") # tool failed fault tolerance
@@ -148,7 +164,7 @@ class CodingAgent:
         
     
 
-agent = CodingAgent("Delete hello.py")
+agent = CodingAgent("writerun hello.py")
 
 # result = agent.create_and_run("test.py", "print('Created and run by agent')")
 # print(result)
